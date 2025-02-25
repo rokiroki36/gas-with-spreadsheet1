@@ -148,7 +148,7 @@ const GeneralUtils = {
 * =====================================================
 */
  LOGGING_CONFIG: {
-   SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs',
+   SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1CXXXX',
    SHEET_NAMES: {
      DEBUG: 'Debug',
      ALL_EVENTS: 'AllEventsLog'
