@@ -39,9 +39,10 @@ const CONFIG_CLAIM_Ma = {
   SHEET_NAME: '統一シート',                                          // メインの操作対象シート名
   SETTEI_SHEET_NAME: '督促送信内容', // 各種設定があるシート名
 
+  //購入商品パターン
   PATTERNS: {
-  PATTERN1: '松尾',
-  PATTERN2: '中村'
+  PATTERN1: '',
+  PATTERN2: ''
   },
 
   // 統一シートの列設定
