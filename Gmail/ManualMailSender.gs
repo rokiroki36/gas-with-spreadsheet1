@@ -15,12 +15,12 @@ const MANU_CONFIG_MAIL = {
 
     DEBUG_MODE: false, // true: デバッグモード, false: 本番モード
     
-    SS_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs',
+    SS_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1CXXXX',
     MAIN_SH: '統一シート',
     GENKOU_SH: '任意送信原稿',
     LOG_SH: '予約ｽﾄﾚｰｼﾞ兼送信ﾛｸﾞ',
     
-    ALLOWED_USER: 'worldsecret.bm@gmail.com', // このアカウントでログインしないと、送信者名変える時にエラー出る
+    ALLOWED_USER: 'XXX@gmail.com', // このアカウントでログインしないと、送信者名変える時にエラー出る
 
 
     //任意送信原稿シート内の列の設定
