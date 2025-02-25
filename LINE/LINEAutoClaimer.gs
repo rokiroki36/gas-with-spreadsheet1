@@ -34,7 +34,7 @@ const CONFIG_CLAIM_L = {
   },
 
   // スプレッドシート関連の設定
-  SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs',  // 操作対象のスプレッドシートID
+  SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6XXX',  // 操作対象のスプレッドシートID
   SHEET_NAME: '統一シート',                                          // メインの操作対象シート名
   SETTEI_SHEET_NAME: '督促送信内容', // 各種設定があるシート名
 
