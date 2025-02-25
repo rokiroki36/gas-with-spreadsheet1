@@ -174,7 +174,7 @@ function distributeEvents_(e) {
 */
 function getRequiredSheets_() {
  // スプレッドシートを開く
- const ss = SpreadsheetApp.openById('1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs');
+ const ss = SpreadsheetApp.openById('1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1XXXX');
  // 各シートの参照を取得し、オブジェクトとして返す
  return {
    debugSheet: ss.getSheetByName('Debug'),
