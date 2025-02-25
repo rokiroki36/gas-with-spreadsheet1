@@ -30,12 +30,12 @@ const CONFIG_CLAIM_Ma = {
 
   // Gmail関連の設定
   GMAIL: {
-    SENDER_NAME: 'GAFAシステム運営事務局', // 送信者名
-    SENDER_EMAIL_ADDRESS: 'support@vget.info' // 送信者メールアドレス
+    SENDER_NAME: '', // 送信者名
+    SENDER_EMAIL_ADDRESS: '' // 送信者メールアドレス
   },
 
   // スプレッドシート関連の設定
-  SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs',  // 操作対象のスプレッドシートID
+  SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1CXXXX',  // 操作対象のスプレッドシートID
   SHEET_NAME: '統一シート',                                          // メインの操作対象シート名
   SETTEI_SHEET_NAME: '督促送信内容', // 各種設定があるシート名
 
