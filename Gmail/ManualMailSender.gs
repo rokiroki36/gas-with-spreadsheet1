@@ -74,7 +74,7 @@ const MANU_CONFIG_MAIL = {
         IMAGE_3: 'AF',
         IMAGE_NAME_3: 'AG',
     },
-    DRIVE_FOLDER_ID: '1m8DnseISuaVGqlJofTfKAF-QBVxzMEhT'
+    DRIVE_FOLDER_ID: '1m8DnseISuaVGqlJofTfKAF-QBVxzXXXX'
 
 };
 
