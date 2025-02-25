@@ -15,7 +15,7 @@ const MANU_CONFIG = {
 
     DEBUG_MODE: false, // true: デバッグモード, false: 本番モード
     
-    SS_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs',
+    SS_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1CXXXX',
     MAIN_SH: '統一シート',
     GENKOU_SH: '任意送信原稿',
     LOG_SH: '予約ｽﾄﾚｰｼﾞ兼送信ﾛｸﾞ',
