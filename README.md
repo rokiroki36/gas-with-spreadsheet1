@@ -1,0 +1,2 @@
+# gas-with-spreadsheet1
+WEB通信教育商材売った顧客にメールとLINEでのリレーションシップを自動化
