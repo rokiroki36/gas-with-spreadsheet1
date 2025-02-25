@@ -15,7 +15,7 @@
 const AutoResponseProcessor = {
   // システム全体の設定
   CONFIG: {
-    SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs',
+    SPREADSHEET_ID: '1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1CXXXX',
     SHEET_NAMES: {
       AUTO_RESPONSE: '自動応答シート',  // 自動応答の設定用シート
       UNIFIED: '統一シート'            // 顧客情報管理シート
