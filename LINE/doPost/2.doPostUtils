@@ -1,0 +1,269 @@
+/**
+ * =====================================================
+ * グループ1: LINE Platform Communication
+ * LINEプラットフォームとの直接的な通信を担当
+ * - アクセストークン管理
+ * - プロフィール情報取得
+ * - メッセージ送信
+ * =====================================================
+ */
+const LineUtils = {
+  /**
+   * LINE Messaging APIのアクセストークンを取得する
+   * @return {string} LINE Messaging APIのアクセストークン
+   * @private
+   */
+  getAccessToken_: function() {
+    return PropertiesService.getScriptProperties().getProperty('LINE_ACCESS_TOKEN');
+  },
+
+  /**
+   * LINEユーザーのプロフィール情報を取得する
+   * @param {string} userId - LINEユーザーID
+   * @return {Object} プロフィール情報
+   * @private
+   */
+  getUserName_: function(userId) {
+    const accessToken = this.getAccessToken_();
+    const url = `https://api.line.me/v2/bot/profile/${userId}`;
+    const options = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    };
+
+    try {
+      // LINE Profile APIにリクエストを送信
+      const response = UrlFetchApp.fetch(url, options);
+      if (response.getResponseCode() === 200) {
+        // 正常にプロフィール情報を取得できた場合
+        const json = JSON.parse(response.getContentText());
+        return {
+          success: true,
+          displayName: json.displayName
+        };
+      } 
+      // APIからエラーレスポンスが返ってきた場合（400系, 500系エラー）
+      const errorJson = JSON.parse(response.getContentText());
+      GeneralUtils.logError_('LINE Profile API error', new Error(response.getContentText()));
+      return {
+        success: false,
+        errorCode: errorJson.code,
+        errorMessage: errorJson.message
+      };
+    } catch (error) {
+      // ネットワークエラーやパース失敗など、予期せぬエラーが発生した場合
+      GeneralUtils.logError_('LINE Profile API error', error);
+      return {
+        success: false,
+        errorMessage: error.message
+      };
+    }
+  },
+
+   /**
+   * LINEユーザーにメッセージを送信する
+   * @param {string} userId - 送信先のLINEユーザーID
+   * @param {Object} messageObj - 送信するメッセージオブジェクト
+   * @param {string} accessToken - LINE Messaging APIのアクセストークン
+   * @private
+   */
+  sendMessage_: function(userId, messageObj, accessToken) {
+    try {
+      const url = 'https://api.line.me/v2/bot/message/push';
+      const headers = {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': `Bearer ${accessToken}`
+      };
+
+      let message;
+    // messageObj.content が画像URLかどうかでメッセージタイプを判定
+    if (messageObj.content.match(/\.(jpeg|jpg|gif|png)$/i) != null) { 
+      // Flex Messageとして画像を送信
+      message = {
+        'type': 'flex',
+        'altText': messageObj.altText, 
+        'contents': {
+          'type': 'bubble',
+          'hero': {
+            'type': 'image',
+            'url': messageObj.content, 
+            'size': 'full',
+            'aspectMode': 'cover'
+          }
+        }
+      };
+    } else {
+      // テキストメッセージを送信
+      message = {
+        'type': 'text',
+        'text': messageObj.content
+      };
+    }
+
+      const data = {
+        'to': userId,
+        'messages': [message]
+      };
+
+      const options = {
+        'method': 'post',
+        'headers': headers,
+        'payload': JSON.stringify(data),
+        'muteHttpExceptions': true
+      };
+
+      const response = UrlFetchApp.fetch(url, options);
+
+      if (response.getResponseCode() !== 200) {
+        const errorJson = JSON.parse(response.getContentText());
+        GeneralUtils.logError_('LINE メッセージ送信エラー', new Error(response.getContentText()));
+      }
+    } catch (error) {
+      GeneralUtils.logError_('LineUtils.SendMessage_', error);
+    }
+  }
+};
+
+/**
+ * =====================================================
+ * グループ2: Webhook Event Handling
+ * Webhookイベントの受信と処理を担当
+ * =====================================================
+ */
+
+/**
+ * Webhookから受信したイベントを振り分け、各種ログを記録する
+ * @param {Object} e - Webhookイベントのデータ
+ * @return {Object} イベントタイプごとに分類されたイベントの配列
+ * @private
+ */
+function distributeEvents_(e) {
+  GeneralUtils.logDebug_('distributeEvents_ 開始');
+  
+  try {
+    // Webhookデータからイベント配列を取得
+    const events = JSON.parse(e.postData.contents).events;    
+    // 必要なシートの参照を取得
+    const sheets = getRequiredSheets_();
+    
+    // 全てのイベントをログシートに記録
+    GeneralUtils.logDebug_('logAllEvents_ 開始');
+    logAllEvents_(events, sheets.allEventsSheet);  
+
+    // イベントの種類ごとに処理を振り分ける
+    const result = {};
+    // メッセージイベントが含まれている場合
+    if (events.some(event => event.type === 'message')) {
+      // メッセージイベントのみを抽出
+      result.message = events.filter(event => event.type === 'message');
+    }
+    
+    return result;
+  } catch (error) {
+    GeneralUtils.logError_('distributeEvents_', error);
+    throw error;
+  }
+} // distributeEvents_ 関数の閉じ括弧も不足していました
+
+
+/**
+* 必要なスプレッドシートの参照を取得する
+* @return {Object} 各シートの参照を含むオブジェクト
+* @private
+*/
+function getRequiredSheets_() {
+ // スプレッドシートを開く
+ const ss = SpreadsheetApp.openById('1Burek5CFlxcN80ZtIAMLcvhgn62DzfNzzWq6V1C6DMs');
+ // 各シートの参照を取得し、オブジェクトとして返す
+ return {
+   debugSheet: ss.getSheetByName('Debug'),
+   allEventsSheet: ss.getSheetByName('AllEventsLog')
+ };
+}
+
+
+/**
+ * イベントを種類別に分類する
+ * @param {Array} events - 分類対象のイベント配列
+ * @return {Object} イベントタイプごとに分類されたオブジェクト
+ * @private
+ */
+function categorizeEvents_(events) {
+  // reduce関数を使用してイベントを種類別に分類
+  return events.reduce((acc, event) => {
+    // 新しいイベントタイプの場合、配列を初期化
+    if (!acc[event.type]) {
+      acc[event.type] = [];
+    }
+    // イベントを対応する配列に追加
+    acc[event.type].push(event);
+    return acc;
+  }, {});
+}
+
+
+/**
+* 全てのイベントをログシートに記録する
+* LINEからのWebhookで受け取った各種イベントの詳細を記録
+* @param {Array} events - Webhookから受信したイベントの配列
+* @param {Object} allEventsSheet - AllEventsLogシートの参照
+* @private
+*/
+function logAllEvents_(events, allEventsSheet) {
+  try {
+    if (events && events.length > 0) {
+      // バッチ処理でログを記録
+      GeneralUtils.processBatchEvents_(events, allEventsSheet);
+    }
+  } catch (error) {
+    GeneralUtils.logError_('logAllEvents_', error);
+  }
+}
+
+
+/**
+ * LINEイベントを処理するハンドラーを定義
+ * 振り分けられた各イベントの具体的な処理を実行
+ */
+const LineHandlers = {
+  MessageHandler: {
+    /**
+     * メッセージイベントの処理を行う
+     * 現在はテキストメッセージのみに対応
+     * 
+     * @param {Array} events - メッセージイベントの配列
+     * @private
+     */
+  process_: function(events) {
+    events.forEach(event => {
+      // event.message が存在し、かつタイプが "text" の場合のみ処理を行う
+      if (event.message && event.message.type === "text") { 
+        this.handleText_(event);
+      }
+    });
+  },
+
+    /**
+     * テキストメッセージの処理を行う
+     * ユーザー情報を取得し、適切な処理にメッセージを振り分け
+     * 
+     * @param {Object} event - 単一のメッセージイベント
+     * @private
+     */
+    handleText_: function(event) {
+      // ユーザーのプロフィール情報を取得
+      const profile = LineUtils.getUserName_(event.source.userId);
+      // ユーザー情報を作成
+      const userInfo = {
+        userId: event.source.userId,
+        messageText: event.message.text,
+        timestamp: event.timestamp,
+        userName: profile.success ? profile.displayName : ""
+      };
+
+      // テキストメッセージ処理に振り分け
+      TextEventProcessors.processMessage_(userInfo, event); // event オブジェクトを渡す
+    }
+  }
+};
